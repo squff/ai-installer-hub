@@ -79,6 +79,10 @@ export interface ApiProvider {
   baseUrl?: string;
   models: string[];
   requiresApiKey: boolean;
+  /** 需要科学上网才能访问 */
+  needsProxy: boolean;
+  /** 中国大陆推荐 */
+  chinaRecommended: boolean;
 }
 
 export interface ApiConfig {

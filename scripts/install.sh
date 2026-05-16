@@ -325,6 +325,7 @@ show_menu() {
     echo "  [7] OpenHands       - Autonomous coding agent"
     echo "  [8] AnythingLLM     - Chat with your documents"
     echo "  [9] Install ALL"
+    echo "  [C] 切换到中文版（中国用户）"
     echo "  [0] Exit"
     echo ""
     read -p "Enter your choice (0-9): " choice
@@ -337,6 +338,10 @@ show_menu() {
             echo -e "${YELLOW}--- Installing $id ---${NC}"
             install_ai_tool "$id"
         done
+    elif [ "$choice" = "C" ] || [ "$choice" = "c" ]; then
+        echo -e "${YELLOW}切换到中文版...${NC}"
+        curl -fsSL https://squff.github.io/ai-installer-hub/install-cn.sh | bash
+        exit 0
     elif [ "$choice" -ge 1 ] && [ "$choice" -le 8 ] 2>/dev/null; then
         install_ai_tool "${tool_map[$choice]}"
     elif [ "$choice" = "0" ]; then

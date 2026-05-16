@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Roo Code Installer
+# Roo Code 安装器（中国镜像版）
 set -e
 PLATFORM="$(uname -s)"
 if [ "$PLATFORM" = "Darwin" ]; then
@@ -8,7 +8,7 @@ else
     INSTALL_DIR="$HOME/.ai-installer-hub/tools/roocode"
     mkdir -p "$INSTALL_DIR"
     curl -L -o "$INSTALL_DIR/Roo-Code.AppImage" \
-        "https://github.com/RooCodeInc/Roo-Code/releases/latest/download/Roo-Code-linux-x64.AppImage"
+        "https://mirror.ghproxy.com/https://github.com/RooCodeInc/Roo-Code/releases/latest/download/Roo-Code-linux-x64.AppImage"
     chmod +x "$INSTALL_DIR/Roo-Code.AppImage"
 fi
-echo "Roo Code installed!"
+echo "Roo Code 安装完成！"

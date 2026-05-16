@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * AI Installer Hub - Main CLI Entry Point
- * One-click installation for AI assistants
+ * AI 助手一键安装器 - CLI 入口
+ * 中国大陆特供版
  */
 
 import { EnvironmentDetector } from './core/env-detector';
@@ -19,7 +19,7 @@ async function main(): Promise<void> {
   const args = process.argv.slice(2);
   const command = args[0] || 'help';
 
-  logger.banner(`AI Installer Hub v${VERSION}`);
+  logger.banner(`AI 助手一键安装器 v${VERSION}`);
   console.log('');
 
   switch (command) {
@@ -63,7 +63,7 @@ async function main(): Promise<void> {
 
 async function handleInstall(toolId?: string, flags: string[] = []): Promise<void> {
   if (!toolId) {
-    logger.error('Please specify a tool to install. Run "aihub list" to see available tools.');
+    logger.error('请指定要安装的工具。运行 "aihub list" 查看可用工具。');
     return;
   }
 
@@ -72,25 +72,25 @@ async function handleInstall(toolId?: string, flags: string[] = []): Promise<voi
   const autoRepair = new AutoRepair();
   const mirrorManager = new MirrorManager();
 
-  // Load plugins
+  // 加载插件
   await pluginManager.loadPlugins();
 
-  // Detect environment
-  logger.info('Detecting system environment...');
+  // 检测系统环境
+  logger.info('正在检测系统环境...');
   const env = await detector.detect();
 
-  logger.info(`Platform: ${env.platform} (${env.arch})`);
-  logger.info(`Node.js: ${env.nodeVersion || 'Not found'}`);
-  logger.info(`Python: ${env.pythonVersion || 'Not found'}`);
-  logger.info(`Git: ${env.gitVersion || 'Not found'}`);
-  logger.info(`Docker: ${env.hasDocker ? 'Yes' : 'No'}`);
-  logger.info(`GPU: ${env.gpuType || 'None'} (CUDA: ${env.hasCUDA ? 'Yes' : 'No'})`);
+  logger.info(`系统: ${env.platform} (${env.arch})`);
+  logger.info(`Node.js: ${env.nodeVersion || '未安装'}`);
+  logger.info(`Python: ${env.pythonVersion || '未安装'}`);
+  logger.info(`Git: ${env.gitVersion || '未安装'}`);
+  logger.info(`Docker: ${env.hasDocker ? '已安装' : '未安装'}`);
+  logger.info(`GPU: ${env.gpuType || '无'} (CUDA: ${env.hasCUDA ? '支持' : '不支持'})`);
   console.log('');
 
-  // Auto-detect best mirrors
+  // 自动检测最佳镜像（默认中国镜像）
   await mirrorManager.detectBestMirror();
 
-  // Parse config from flags
+  // 解析配置参数
   const config: any = {};
   for (let i = 0; i < flags.length; i++) {
     if (flags[i] === '--api-key' && flags[i + 1]) {
@@ -111,7 +111,7 @@ async function handleInstall(toolId?: string, flags: string[] = []): Promise<voi
     }
   }
 
-  // Install with auto-repair
+  // 安装（带自动修复）
   try {
     const result = await pluginManager.installPlugin(toolId, env, config);
     if (result.success) {
@@ -121,9 +121,9 @@ async function handleInstall(toolId?: string, flags: string[] = []): Promise<voi
       console.log('');
       logger.fail(result.message);
 
-      // Try auto-repair
+      // 尝试自动修复
       if (result.errors?.length) {
-        logger.info('Attempting auto-repair...');
+        logger.info('正在尝试自动修复...');
         const repair = await autoRepair.autoRepair(
           result.errors.join('; '),
           env,
@@ -133,20 +133,20 @@ async function handleInstall(toolId?: string, flags: string[] = []): Promise<voi
           }
         );
         if (repair.fixed) {
-          logger.success('Auto-repair fixed the issue!');
+          logger.success('自动修复成功！');
         } else {
-          logger.error('Auto-repair could not fix the issue. Check logs for details.');
+          logger.error('自动修复失败，请查看日志了解详情。');
         }
       }
     }
   } catch (err: any) {
-    logger.error(`Installation failed: ${err.message}`);
+    logger.error(`安装失败: ${err.message}`);
   }
 }
 
 async function handleUninstall(toolId?: string): Promise<void> {
   if (!toolId) {
-    logger.error('Please specify a tool to uninstall.');
+    logger.error('请指定要卸载的工具。');
     return;
   }
 
@@ -164,13 +164,13 @@ async function handleUninstall(toolId?: string): Promise<void> {
       logger.fail(result.message);
     }
   } catch (err: any) {
-    logger.error(`Uninstall failed: ${err.message}`);
+    logger.error(`卸载失败: ${err.message}`);
   }
 }
 
 async function handleUpdate(toolId?: string): Promise<void> {
   if (!toolId) {
-    logger.error('Please specify a tool to update.');
+    logger.error('请指定要更新的工具。');
     return;
   }
 
@@ -188,7 +188,7 @@ async function handleUpdate(toolId?: string): Promise<void> {
       logger.fail(result.message);
     }
   } catch (err: any) {
-    logger.error(`Update failed: ${err.message}`);
+    logger.error(`更新失败: ${err.message}`);
   }
 }
 
@@ -197,41 +197,51 @@ async function handleList(): Promise<void> {
   await pluginManager.loadPlugins();
 
   const plugins = pluginManager.listPlugins();
-  console.log('Available AI Assistants:\n');
+  console.log('可用的 AI 助手:\n');
 
-  const categories = new Map<string, typeof plugins>();
+  const categories: Record<string, string> = {
+    'coding-assistant': '编程助手',
+    'chat-agent': '对话助手',
+    'automation': '自动化工具',
+    'local-model': '本地模型',
+    'knowledge-base': '知识库',
+    'dev-tools': '开发工具',
+  };
+
+  const grouped = new Map<string, typeof plugins>();
   for (const p of plugins) {
-    const cat = categories.get(p.category) || [];
+    const cat = grouped.get(p.category) || [];
     cat.push(p);
-    categories.set(p.category, cat);
+    grouped.set(p.category, cat);
   }
 
-  for (const [category, tools] of categories) {
-    console.log(`  ${category.toUpperCase().replace('-', ' ')}`);
+  for (const [category, tools] of grouped) {
+    const catName = categories[category] || category;
+    console.log(`  【${catName}】`);
     for (const p of tools) {
       const platforms = p.supportedPlatforms.map((pl) => {
         if (pl === 'windows') return 'Win';
         if (pl === 'macos') return 'Mac';
         return 'Linux';
-      }).join(', ');
+      }).join('/');
       const models = [
-        p.localModel ? 'Local' : '',
-        p.cloudModel ? 'Cloud' : '',
+        p.localModel ? '本地' : '',
+        p.cloudModel ? '云端' : '',
       ].filter(Boolean).join('+');
 
-      console.log(`    ${p.name.padEnd(20)} ${p.description.slice(0, 50)}`);
-      console.log(`    ${''.padEnd(20)} ID: ${p.id} | Platforms: ${platforms} | ${models}`);
+      console.log(`    ${p.name.padEnd(20)} ${p.description.slice(0, 40)}`);
+      console.log(`    ${''.padEnd(20)} ID: ${p.id} | 平台: ${platforms} | ${models}`);
       console.log('');
     }
   }
 
-  console.log('Install:  aihub install <id>');
-  console.log('Help:     aihub help');
+  console.log('安装命令:  aihub install <id>');
+  console.log('帮助信息:  aihub help');
 }
 
 async function handleSearch(query: string): Promise<void> {
   if (!query) {
-    logger.error('Please provide a search query.');
+    logger.error('请提供搜索关键词。');
     return;
   }
 
@@ -240,15 +250,15 @@ async function handleSearch(query: string): Promise<void> {
 
   const results = pluginManager.searchPlugins(query);
   if (results.length === 0) {
-    logger.info(`No results found for "${query}"`);
+    logger.info(`未找到 "${query}" 相关的工具`);
     return;
   }
 
-  console.log(`Search results for "${query}":\n`);
+  console.log(`搜索结果 "${query}":\n`);
   for (const p of results) {
     console.log(`  ${p.name} (${p.id})`);
     console.log(`    ${p.description}`);
-    console.log(`    Platforms: ${p.supportedPlatforms.join(', ')}`);
+    console.log(`    平台: ${p.supportedPlatforms.join(', ')}`);
     console.log('');
   }
 }
@@ -263,21 +273,22 @@ async function handleStatus(toolId?: string): Promise<void> {
   if (toolId) {
     const plugin = pluginManager.getPlugin(toolId);
     if (!plugin) {
-      logger.error(`Unknown tool: ${toolId}`);
+      logger.error(`未知工具: ${toolId}`);
       return;
     }
     const status = await plugin.status(env);
     console.log(`${plugin.name}:`);
-    console.log(`  Running:  ${status.running}`);
-    console.log(`  Health:   ${status.health}`);
-    if (status.version) console.log(`  Version:  ${status.version}`);
-    if (status.port) console.log(`  Port:     ${status.port}`);
+    console.log(`  运行状态: ${status.running ? '运行中' : '未运行'}`);
+    console.log(`  健康状态: ${status.health}`);
+    if (status.version) console.log(`  版本: ${status.version}`);
+    if (status.port) console.log(`  端口: ${status.port}`);
   } else {
-    console.log('Status of all tools:\n');
+    console.log('已安装工具状态:\n');
     for (const plugin of pluginManager.listPlugins()) {
       const status = await plugin.status(env);
       const icon = status.health === 'healthy' ? '[+]' : '[-]';
-      console.log(`  ${icon} ${plugin.name.padEnd(20)} ${status.health}`);
+      const healthText = status.health === 'healthy' ? '正常' : '未安装';
+      console.log(`  ${icon} ${plugin.name.padEnd(20)} ${healthText}`);
     }
   }
 }
@@ -288,10 +299,19 @@ async function handleConfig(args: string[]): Promise<void> {
 
   switch (subCommand) {
     case 'list':
-      console.log('Available API providers:\n');
-      for (const p of apiManager.listProviders()) {
-        console.log(`  ${p.displayName.padEnd(25)} (${p.name})`);
-        console.log(`    Models: ${p.models.join(', ')}`);
+      console.log('可用的 API 提供商:\n');
+
+      console.log('  【国内可用，无需科学上网】');
+      for (const p of apiManager.listProviders().filter((p) => !p.needsProxy)) {
+        console.log(`    ${p.displayName.padEnd(30)} (${p.name})`);
+        console.log(`      模型: ${p.models.join(', ')}`);
+        console.log('');
+      }
+
+      console.log('  【需要科学上网】');
+      for (const p of apiManager.listProviders().filter((p) => p.needsProxy)) {
+        console.log(`    ${p.displayName.padEnd(30)} (${p.name})`);
+        console.log(`      模型: ${p.models.join(', ')}`);
         console.log('');
       }
       break;
@@ -300,34 +320,39 @@ async function handleConfig(args: string[]): Promise<void> {
       const provider = args[1];
       const apiKey = args[2];
       if (!provider || !apiKey) {
-        logger.error('Usage: aihub config set <provider> <api-key>');
+        logger.error('用法: aihub config set <provider> <api-key>');
         return;
       }
       await apiManager.saveConfig({ provider, apiKey });
-      logger.success(`API key saved for ${provider}`);
+      logger.success(`API Key 已保存: ${provider}`);
       break;
     }
 
     case 'test': {
       const provider = args[1];
       if (!provider) {
-        logger.error('Usage: aihub config test <provider>');
+        logger.error('用法: aihub config test <provider>');
         return;
       }
       const ok = await apiManager.testConnection(provider);
       if (ok) {
-        logger.success(`${provider} connection OK`);
+        logger.success(`${provider} 连接正常`);
       } else {
-        logger.fail(`${provider} connection failed`);
+        logger.fail(`${provider} 连接失败`);
       }
       break;
     }
 
     default:
-      console.log('API Configuration:\n');
-      console.log('  aihub config list              List available API providers');
-      console.log('  aihub config set <prov> <key>  Set API key for a provider');
-      console.log('  aihub config test <prov>       Test connection to a provider');
+      console.log('API 配置管理:\n');
+      console.log('  aihub config list              列出可用的 API 提供商');
+      console.log('  aihub config set <prov> <key>  设置 API Key');
+      console.log('  aihub config test <prov>       测试 API 连接');
+      console.log('');
+      console.log('推荐配置（国内可用）:');
+      console.log('  aihub config set deepseek sk-xxx');
+      console.log('  aihub config set kimi sk-xxx');
+      console.log('  aihub config set tongyi sk-xxx');
       break;
   }
 }
@@ -335,20 +360,20 @@ async function handleConfig(args: string[]): Promise<void> {
 async function handleDoctor(): Promise<void> {
   const detector = new EnvironmentDetector();
 
-  logger.info('Running system diagnostics...\n');
+  logger.info('正在运行系统诊断...\n');
   const env = await detector.detect();
 
-  console.log('System Information:');
-  console.log(`  Platform:     ${env.platform}`);
-  console.log(`  Architecture: ${env.arch}`);
-  console.log(`  OS Version:   ${env.osVersion}`);
+  console.log('系统信息:');
+  console.log(`  操作系统:     ${env.platform}`);
+  console.log(`  架构:         ${env.arch}`);
+  console.log(`  系统版本:     ${env.osVersion}`);
   console.log(`  Shell:        ${env.shellType}`);
-  console.log(`  Home Dir:     ${env.homeDir}`);
-  console.log(`  Install Dir:  ${env.installDir}`);
-  console.log(`  Admin:        ${env.isAdmin ? 'Yes' : 'No'}`);
+  console.log(`  主目录:       ${env.homeDir}`);
+  console.log(`  安装目录:     ${env.installDir}`);
+  console.log(`  管理员权限:   ${env.isAdmin ? '是' : '否'}`);
   console.log('');
 
-  console.log('Dependencies:');
+  console.log('环境依赖:');
   const checks = [
     { name: 'Node.js', ok: env.hasNode, version: env.nodeVersion },
     { name: 'Python', ok: env.hasPython, version: env.pythonVersion },
@@ -363,51 +388,57 @@ async function handleDoctor(): Promise<void> {
   for (const check of checks) {
     const icon = check.ok ? '[+]' : '[-]';
     const version = check.version ? ` (${check.version})` : '';
-    console.log(`  ${icon} ${check.name.padEnd(15)} ${check.ok ? 'OK' : 'Not found'}${version}`);
+    const status = check.ok ? '已安装' : '未找到';
+    console.log(`  ${icon} ${check.name.padEnd(15)} ${status}${version}`);
   }
 
   if (env.conflicts.length > 0) {
-    console.log('\nPort Conflicts:');
+    console.log('\n端口冲突:');
     for (const conflict of env.conflicts) {
-      console.log(`  [!] Port ${conflict.port} is in use`);
+      console.log(`  [!] 端口 ${conflict.port} 已被占用`);
     }
   }
 
-  console.log('\nAll AI tools should work on this system.');
+  console.log('\n系统已就绪，可以安装所有 AI 工具。');
 }
 
 function showHelp(): void {
   console.log(`
-Usage: aihub <command> [options]
+用法: aihub <命令> [选项]
 
-Commands:
+命令:
   install <id> [--api-key KEY] [--provider PROV] [--model MODEL]
-                Install an AI assistant
-  uninstall <id>              Uninstall an AI assistant
-  update <id>                 Update an AI assistant
-  list                        List all available AI assistants
-  search <query>              Search for AI assistants
-  status [id]                 Show status of installed tools
-  config <subcommand>         Manage API configurations
-  doctor                      Run system diagnostics
-  version                     Show version
+                安装 AI 助手
+  uninstall <id>              卸载 AI 助手
+  update <id>                 更新 AI 助手
+  list                        列出所有可用的 AI 助手
+  search <keyword>            搜索 AI 助手
+  status [id]                 查看已安装工具状态
+  config <subcommand>         管理 API 配置
+  doctor                      系统诊断
+  version                     查看版本
 
-Examples:
-  aihub install claudecode --api-key sk-xxx --provider claude
+示例:
   aihub install ollama
-  aihub install openclaw --provider openai --model gpt-4o
+  aihub install deepseek --api-key sk-xxx
+  aihub install continue --provider deepseek --model deepseek-coder
   aihub list
   aihub doctor
-  aihub config set openai sk-xxx
+  aihub config set deepseek sk-xxx
 
-Quick Install (no CLI needed):
-  Windows:  irm https://aihub.dev/install.ps1 | iex
-  Linux:    curl -fsSL https://aihub.dev/install.sh | bash
-  macOS:    curl -fsSL https://aihub.dev/install.sh | bash
+推荐工具（国内可用，无需科学上网）:
+  ollama      本地大模型运行器（完全离线）
+  deepseek    DeepSeek API（性价比最高）
+  continue    VS Code AI 编程插件
+
+快速安装（无需 CLI）:
+  Windows:  irm https://squff.github.io/ai-installer-hub/install-cn.ps1 | iex
+  Linux:    curl -fsSL https://squff.github.io/ai-installer-hub/install-cn.sh | bash
+  macOS:    curl -fsSL https://squff.github.io/ai-installer-hub/install-cn.sh | bash
 `);
 }
 
 main().catch((err) => {
-  logger.error(`Fatal error: ${err.message}`);
+  logger.error(`致命错误: ${err.message}`);
   process.exit(1);
 });

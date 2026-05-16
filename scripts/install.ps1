@@ -309,6 +309,7 @@ function Main {
         Write-Host "  [7] OpenHands       - Autonomous coding agent"
         Write-Host "  [8] AnythingLLM     - Chat with your documents"
         Write-Host "  [9] Install ALL"
+        Write-Host "  [C] Switch to Chinese version (for China users)"
         Write-Host "  [0] Exit"
         Write-Host ""
 
@@ -331,6 +332,10 @@ function Main {
                 Write-Host "--- Installing $id ---" -ForegroundColor Yellow
                 Install-AITool $id
             }
+        } elseif ($choice -eq "C" -or $choice -eq "c") {
+            Write-Host "Switching to Chinese version..." -ForegroundColor Yellow
+            irm https://squff.github.io/ai-installer-hub/install-cn.ps1 | iex
+            return
         } elseif ($toolMap.ContainsKey($choice)) {
             Install-AITool $toolMap[$choice]
         } elseif ($choice -eq "0") {
