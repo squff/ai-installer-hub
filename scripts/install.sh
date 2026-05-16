@@ -7,7 +7,7 @@ set -e
 # ═══════════════════════════════════════════════════
 # Configuration
 # ═══════════════════════════════════════════════════
-REPO_URL="https://github.com/ai-installer-hub/ai-installer-hub"
+REPO_URL="https://github.com/squff/ai-installer-hub"
 INSTALL_DIR="$HOME/.ai-installer-hub"
 VERSION="1.0.0"
 

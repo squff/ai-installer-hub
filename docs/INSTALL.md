@@ -7,7 +7,7 @@
 Open PowerShell and run:
 
 ```powershell
-irm https://ai-installer-hub.github.io/install.ps1 | iex
+irm https://squff.github.io/ai-installer-hub/install.ps1 | iex
 ```
 
 The script will:
@@ -20,7 +20,7 @@ The script will:
 Open Terminal and run:
 
 ```bash
-curl -fsSL https://ai-installer-hub.github.io/install.sh | bash
+curl -fsSL https://squff.github.io/ai-installer-hub/install.sh | bash
 ```
 
 ## Install a Specific Tool
@@ -29,23 +29,23 @@ curl -fsSL https://ai-installer-hub.github.io/install.sh | bash
 
 ```powershell
 # Install Claude Code with API key
-irm https://ai-installer-hub.github.io/install.ps1 | iex -Tool claudecode -ApiKey "sk-ant-xxx"
+irm https://squff.github.io/ai-installer-hub/install.ps1 | iex -Tool claudecode -ApiKey "sk-ant-xxx"
 
 # Install Ollama (local models, no API key needed)
-irm https://ai-installer-hub.github.io/install.ps1 | iex -Tool ollama
+irm https://squff.github.io/ai-installer-hub/install.ps1 | iex -Tool ollama
 
 # Install Continue extension for VS Code
-irm https://ai-installer-hub.github.io/install.ps1 | iex -Tool continue
+irm https://squff.github.io/ai-installer-hub/install.ps1 | iex -Tool continue
 ```
 
 ### Linux / macOS
 
 ```bash
 # Install Claude Code with API key
-curl -fsSL https://ai-installer-hub.github.io/install.sh | bash -s -- --tool claudecode --api-key "sk-ant-xxx"
+curl -fsSL https://squff.github.io/ai-installer-hub/install.sh | bash -s -- --tool claudecode --api-key "sk-ant-xxx"
 
 # Install Ollama
-curl -fsSL https://ai-installer-hub.github.io/install.sh | bash -s -- --tool ollama
+curl -fsSL https://squff.github.io/ai-installer-hub/install.sh | bash -s -- --tool ollama
 ```
 
 ## Install via npm (CLI tool)
@@ -75,10 +75,10 @@ node dist/index.js list
 
 ```powershell
 # Remove a specific tool
-irm https://ai-installer-hub.github.io/uninstall.ps1 | iex -Tool ollama
+irm https://squff.github.io/ai-installer-hub/uninstall.ps1 | iex -Tool ollama
 
 # Remove everything
-irm https://ai-installer-hub.github.io/uninstall.ps1 | iex -All
+irm https://squff.github.io/ai-installer-hub/uninstall.ps1 | iex -All
 ```
 
 ### Linux / macOS

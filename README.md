@@ -28,13 +28,13 @@ Think of it like an **App Store for AI assistants**.
 ### Windows
 
 ```powershell
-irm https://ai-installer-hub.github.io/install.ps1 | iex
+irm https://squff.github.io/ai-installer-hub/install.ps1 | iex
 ```
 
 ### Linux / macOS
 
 ```bash
-curl -fsSL https://ai-installer-hub.github.io/install.sh | bash
+curl -fsSL https://squff.github.io/ai-installer-hub/install.sh | bash
 ```
 
 That's it. The installer will:
@@ -50,20 +50,20 @@ That's it. The installer will:
 
 ```powershell
 # Install Claude Code
-irm https://ai-installer-hub.github.io/install.ps1 | iex -Tool claudecode -ApiKey "sk-xxx"
+irm https://squff.github.io/ai-installer-hub/install.ps1 | iex -Tool claudecode -ApiKey "sk-xxx"
 
 # Install Ollama
-irm https://ai-installer-hub.github.io/install.ps1 | iex -Tool ollama
+irm https://squff.github.io/ai-installer-hub/install.ps1 | iex -Tool ollama
 ```
 
 ### Linux / macOS
 
 ```bash
 # Install Claude Code
-curl -fsSL https://ai-installer-hub.github.io/install.sh | bash -s -- --tool claudecode --api-key "sk-xxx"
+curl -fsSL https://squff.github.io/ai-installer-hub/install.sh | bash -s -- --tool claudecode --api-key "sk-xxx"
 
 # Install Ollama
-curl -fsSL https://ai-installer-hub.github.io/install.sh | bash -s -- --tool ollama
+curl -fsSL https://squff.github.io/ai-installer-hub/install.sh | bash -s -- --tool ollama
 ```
 
 ---
