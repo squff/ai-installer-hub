@@ -49,6 +49,8 @@ curl -fsSL https://squff.github.io/ai-installer-hub/install-cn.sh | bash
 3. 使用国内镜像加速下载
 4. 显示工具列表让你选择
 
+> **详细安装指南（每个工具的完整步骤、注意事项、常见问题）：[docs/INSTALL-GUIDE.md](docs/INSTALL-GUIDE.md)**
+
 ---
 
 ## 安装指定工具
