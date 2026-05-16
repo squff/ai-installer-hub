@@ -4,7 +4,7 @@
 
 import * as path from 'path';
 import * as fs from 'fs';
-import { InstallerPlugin, EnvironmentInfo, InstallConfig, PluginCategory } from './types';
+import { InstallerPlugin, EnvironmentInfo, InstallConfig, InstallResult, PluginCategory } from './types';
 import { Logger } from '../utils/logger';
 
 export class PluginManager {
@@ -18,7 +18,7 @@ export class PluginManager {
   }
 
   async loadPlugins(): Promise<void> {
-    this.logger.info('Loading installer plugins...');
+    this.logger.info('正在加载安装插件...');
 
     // Built-in plugins
     this.loadBuiltInPlugins();
@@ -26,7 +26,7 @@ export class PluginManager {
     // External plugins from installers directory
     await this.loadExternalPlugins();
 
-    this.logger.info(`Loaded ${this.plugins.size} plugins`);
+    this.logger.info(`已加载 ${this.plugins.size} 个插件`);
   }
 
   private loadBuiltInPlugins(): void {
@@ -62,7 +62,7 @@ export class PluginManager {
         const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
         this.logger.info(`  [EXT] ${manifest.name} (${manifest.id})`);
       } catch (err) {
-        this.logger.warn(`Failed to load external plugin: ${entry.name}`);
+        this.logger.warn(`加载外部插件失败: ${entry.name}`);
       }
     }
   }
@@ -93,41 +93,50 @@ export class PluginManager {
     id: string,
     env: EnvironmentInfo,
     config: InstallConfig = {}
-  ) {
+  ): Promise<InstallResult> {
     const plugin = this.plugins.get(id);
     if (!plugin) {
-      throw new Error(`Plugin not found: ${id}`);
+      throw new Error(`未找到插件: ${id}`);
     }
 
-    // Check platform support
+    // 检查平台支持
     if (!plugin.supportedPlatforms.includes(env.platform)) {
       throw new Error(
-        `${plugin.name} does not support ${env.platform}. Supported: ${plugin.supportedPlatforms.join(', ')}`
+        `${plugin.name} 不支持 ${env.platform}。支持的平台: ${plugin.supportedPlatforms.join(', ')}`
       );
     }
 
-    // Detect existing installation
+    // 检测已有安装
     const detection = await plugin.detect(env);
     if (detection.alreadyInstalled) {
-      this.logger.info(`${plugin.name} v${detection.installedVersion} is already installed`);
-      return { success: true, message: `${plugin.name} is already installed`, alreadyInstalled: true };
+      this.logger.info(`${plugin.name} v${detection.installedVersion} 已安装`);
+      return {
+        success: true,
+        message: `${plugin.name} 已安装`,
+        installedPath: detection.installedPath,
+        version: detection.installedVersion,
+        logs: [],
+        warnings: [],
+        errors: [],
+        repairAttempts: 0,
+      };
     }
 
-    // Pre-install check
-    this.logger.info(`Checking prerequisites for ${plugin.name}...`);
+    // 安装前检查
+    this.logger.info(`正在检查 ${plugin.name} 的前置条件...`);
     const preResult = await plugin.preInstall(env);
     if (!preResult.canInstall) {
-      this.logger.warn(`Missing dependencies: ${preResult.missingDependencies.map((d) => d.name).join(', ')}`);
+      this.logger.warn(`缺少依赖: ${preResult.missingDependencies.map((d) => d.name).join(', ')}`);
     }
 
-    // Install
-    this.logger.info(`Installing ${plugin.name}...`);
+    // 安装
+    this.logger.info(`正在安装 ${plugin.name}...`);
     const result = await plugin.install(env, config);
 
     if (result.success) {
-      // Post-install
+      // 安装后处理
       await plugin.postInstall(env, result);
-      this.logger.info(`${plugin.name} installed successfully!`);
+      this.logger.info(`${plugin.name} 安装成功！`);
     }
 
     return result;
@@ -135,13 +144,13 @@ export class PluginManager {
 
   async uninstallPlugin(id: string, env: EnvironmentInfo) {
     const plugin = this.plugins.get(id);
-    if (!plugin) throw new Error(`Plugin not found: ${id}`);
+    if (!plugin) throw new Error(`未找到插件: ${id}`);
     return plugin.uninstall(env);
   }
 
   async updatePlugin(id: string, env: EnvironmentInfo) {
     const plugin = this.plugins.get(id);
-    if (!plugin) throw new Error(`Plugin not found: ${id}`);
+    if (!plugin) throw new Error(`未找到插件: ${id}`);
     return plugin.update(env);
   }
 }

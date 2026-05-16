@@ -19,7 +19,7 @@ const logger = new Logger('Continue');
 const ContinuePlugin: InstallerPlugin = {
   id: 'continue',
   name: 'Continue',
-  description: 'Open-source AI code assistant - the leading open-source AI code assistant',
+  description: 'VS Code AI 编程插件，支持代码补全和智能对话',
   version: '1.0.0',
   category: 'coding-assistant',
   tags: ['ide-extension', 'coding', 'open-source', 'vscode', 'jetbrains'],
@@ -52,14 +52,14 @@ const ContinuePlugin: InstallerPlugin = {
     try {
       execSync('code --version', { encoding: 'utf-8', timeout: 5000 });
     } catch {
-      warnings.push('VS Code not detected. Install VS Code first for the best experience.');
+      warnings.push('未检测到 VS Code，请先安装 VS Code 以获得最佳体验。');
     }
     return {
       canInstall: true,
       missingDependencies: [],
       warnings,
       estimatedSize: '~100 MB',
-      estimatedTime: '1-3 minutes',
+      estimatedTime: '1-3 分钟',
     };
   },
 
@@ -67,11 +67,11 @@ const ContinuePlugin: InstallerPlugin = {
     const logs: string[] = [];
 
     try {
-      logs.push('Installing Continue extension for VS Code...');
+      logs.push('正在为 VS Code 安装 Continue 插件...');
       run('code --install-extension Continue.continue --force', { timeout: 120000 });
 
       if (config.apiConfig) {
-        logs.push('Configuring Continue API settings...');
+        logs.push('正在配置 Continue API 设置...');
         const configDir = path.join(env.homeDir, '.continue');
         const configFile = path.join(configDir, 'config.json');
         ensureDir(path.dirname(configFile));
@@ -90,7 +90,7 @@ const ContinuePlugin: InstallerPlugin = {
 
       return {
         success: true,
-        message: 'Continue installed! Restart VS Code to activate.',
+        message: 'Continue 安装完成！重启 VS Code 即可使用。',
         logs,
         warnings: [],
         errors: [],
@@ -103,14 +103,14 @@ const ContinuePlugin: InstallerPlugin = {
 
   async postInstall(env: EnvironmentInfo, result: InstallResult): Promise<void> {
     if (result.success) {
-      logger.success('Continue extension installed! Restart VS Code to activate.');
+      logger.success('Continue 插件安装完成！重启 VS Code 即可激活。');
     }
   },
 
   async uninstall(env: EnvironmentInfo): Promise<UninstallResult> {
     try {
       run('code --uninstall-extension Continue.continue', { timeout: 30000 });
-      return { success: true, message: 'Continue uninstalled', logs: ['Extension removed'] };
+      return { success: true, message: 'Continue 已卸载', logs: ['已移除插件'] };
     } catch (err: any) {
       return { success: false, message: err.message, logs: [err.message] };
     }
@@ -119,7 +119,7 @@ const ContinuePlugin: InstallerPlugin = {
   async update(env: EnvironmentInfo): Promise<UpdateResult> {
     try {
       run('code --install-extension Continue.continue --force', { timeout: 120000 });
-      return { success: true, message: 'Continue updated', logs: ['Reinstalled latest version'] };
+      return { success: true, message: 'Continue 已更新', logs: ['已重装最新版本'] };
     } catch (err: any) {
       return { success: false, message: err.message, logs: [err.message] };
     }
@@ -143,11 +143,11 @@ const ContinuePlugin: InstallerPlugin = {
   },
 
   async start(env: EnvironmentInfo): Promise<void> {
-    logger.info('Open VS Code and look for the Continue icon in the sidebar.');
+    logger.info('打开 VS Code，在侧边栏找到 Continue 图标即可使用。');
   },
 
   async stop(env: EnvironmentInfo): Promise<void> {
-    logger.info('Continue runs as a VS Code extension.');
+    logger.info('Continue 是 VS Code 扩展，关闭 VS Code 即可停止。');
   },
 
   async status(env: EnvironmentInfo): Promise<PluginStatus> {

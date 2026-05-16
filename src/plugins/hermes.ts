@@ -19,7 +19,7 @@ const logger = new Logger('Hermes');
 const HermesPlugin: InstallerPlugin = {
   id: 'hermes',
   name: 'Hermes',
-  description: 'Lightweight AI assistant with conversation memory and local-first design',
+  description: '轻量级 AI 助手，注重对话记忆和隐私保护',
   version: '1.0.0',
   category: 'chat-agent',
   tags: ['chat', 'memory', 'local', 'privacy', 'lightweight'],
@@ -54,9 +54,9 @@ const HermesPlugin: InstallerPlugin = {
     return {
       canInstall: missing.length === 0 || !missing.some((d) => d.required),
       missingDependencies: missing,
-      warnings: missing.length > 0 ? [`Missing: ${missing.map((d) => d.name).join(', ')}`] : [],
+      warnings: missing.length > 0 ? [`缺少依赖: ${missing.map((d) => d.name).join(', ')}`] : [],
       estimatedSize: '~500 MB',
-      estimatedTime: '3-8 minutes',
+      estimatedTime: '3-8 分钟',
     };
   },
 
@@ -65,13 +65,13 @@ const HermesPlugin: InstallerPlugin = {
     const installDir = config.installDir || getInstallDir('hermes');
 
     try {
-      logs.push('Creating install directory...');
+      logs.push('正在创建安装目录...');
       ensureDir(installDir);
 
-      logs.push('Cloning Hermes repository...');
+      logs.push('正在克隆 Hermes 仓库...');
       run('git clone --depth 1 https://github.com/NousResearch/Hermes.git .', { cwd: installDir, timeout: 120000 });
 
-      logs.push('Creating virtual environment...');
+      logs.push('正在创建虚拟环境...');
       const pythonCmd = env.hasPython ? 'python3' : 'python';
       run(`${pythonCmd} -m venv venv`, { cwd: installDir, timeout: 60000 });
 
@@ -80,18 +80,18 @@ const HermesPlugin: InstallerPlugin = {
         : path.join(installDir, 'venv', 'bin', 'pip');
 
       if (fs.existsSync(path.join(installDir, 'requirements.txt'))) {
-        logs.push('Installing Python dependencies...');
+        logs.push('正在安装 Python 依赖...');
         run(`${venvPip} install -r requirements.txt`, { cwd: installDir, timeout: 300000 });
       }
 
       if (config.apiConfig) {
-        logs.push('Configuring API...');
+        logs.push('正在配置 API...');
         fs.writeFileSync(path.join(installDir, '.env'), `API_KEY=${config.apiConfig.apiKey || ''}\nMODEL=${config.apiConfig.model || 'gpt-4'}\n`);
       }
 
       return {
         success: true,
-        message: 'Hermes installed successfully',
+        message: 'Hermes 安装完成',
         installedPath: installDir,
         logs,
         warnings: [],
@@ -122,7 +122,7 @@ const HermesPlugin: InstallerPlugin = {
     const installDir = getInstallDir('hermes');
     try {
       if (fs.existsSync(installDir)) fs.rmSync(installDir, { recursive: true, force: true });
-      return { success: true, message: 'Hermes uninstalled', logs: ['Removed ' + installDir] };
+      return { success: true, message: 'Hermes 已卸载', logs: ['已移除 ' + installDir] };
     } catch (err: any) {
       return { success: false, message: err.message, logs: [err.message] };
     }
@@ -132,7 +132,7 @@ const HermesPlugin: InstallerPlugin = {
     const installDir = getInstallDir('hermes');
     try {
       run('git pull origin main', { cwd: installDir, timeout: 120000 });
-      return { success: true, message: 'Hermes updated', logs: ['Pulled latest changes'] };
+      return { success: true, message: 'Hermes 已更新', logs: ['已拉取最新代码'] };
     } catch (err: any) {
       return { success: false, message: err.message, logs: [err.message] };
     }

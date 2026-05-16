@@ -19,7 +19,7 @@ const logger = new Logger('RooCode');
 const RooCodePlugin: InstallerPlugin = {
   id: 'roocode',
   name: 'Roo Code',
-  description: 'AI-powered VS Code fork with built-in coding assistant and multi-model support',
+  description: 'AI 编程编辑器（VS Code 增强版），内置 AI 助手',
   version: '1.0.0',
   category: 'coding-assistant',
   tags: ['ide', 'coding', 'vscode', 'multi-model', 'ai-editor'],
@@ -69,7 +69,7 @@ const RooCodePlugin: InstallerPlugin = {
       missingDependencies: [],
       warnings: [],
       estimatedSize: '~300 MB',
-      estimatedTime: '3-5 minutes',
+      estimatedTime: '3-5 分钟',
     };
   },
 
@@ -77,13 +77,13 @@ const RooCodePlugin: InstallerPlugin = {
     const logs: string[] = [];
 
     try {
-      logs.push('Downloading Roo Code...');
+      logs.push('正在下载 Roo Code...');
 
       if (env.platform === 'windows') {
         const installerUrl = 'https://github.com/RooCodeInc/Roo-Code/releases/latest/download/Roo-Code-win32-x64.exe';
         const installerPath = path.join(process.env.TEMP || '/tmp', 'roocode-installer.exe');
         run(`curl -L -o "${installerPath}" "${installerUrl}"`, { timeout: 300000 });
-        logs.push('Running installer...');
+        logs.push('正在运行安装程序...');
         execSync(`"${installerPath}" /S`, { timeout: 300000, stdio: 'inherit' });
       } else if (env.platform === 'macos') {
         run('brew install --cask roocode || brew install roocode', { timeout: 300000 });
@@ -96,7 +96,7 @@ const RooCodePlugin: InstallerPlugin = {
 
       return {
         success: true,
-        message: 'Roo Code installed successfully!',
+        message: 'Roo Code 安装完成！',
         logs,
         warnings: [],
         errors: [],
@@ -108,7 +108,7 @@ const RooCodePlugin: InstallerPlugin = {
   },
 
   async postInstall(env: EnvironmentInfo, result: InstallResult): Promise<void> {
-    if (result.success) logger.success('Roo Code is ready! Launch it from your applications menu.');
+    if (result.success) logger.success('Roo Code 已就绪！从应用菜单中启动。');
   },
 
   async uninstall(env: EnvironmentInfo): Promise<UninstallResult> {
@@ -119,7 +119,7 @@ const RooCodePlugin: InstallerPlugin = {
         const installDir = getInstallDir('roocode');
         if (fs.existsSync(installDir)) fs.rmSync(installDir, { recursive: true, force: true });
       }
-      return { success: true, message: 'Roo Code uninstalled', logs: ['Removed'] };
+      return { success: true, message: 'Roo Code 已卸载', logs: ['已移除'] };
     } catch (err: any) {
       return { success: false, message: err.message, logs: [err.message] };
     }
@@ -130,16 +130,16 @@ const RooCodePlugin: InstallerPlugin = {
       if (env.platform === 'macos') {
         run('brew upgrade --cask roocode', { timeout: 300000 });
       } else {
-        logger.info('Roo Code auto-updates itself. Check Help > Check for Updates in the app.');
+        logger.info('Roo Code 会自动更新。在应用中选择 帮助 > 检查更新。');
       }
-      return { success: true, message: 'Roo Code updated', logs: ['Updated'] };
+      return { success: true, message: 'Roo Code 已更新', logs: ['已更新'] };
     } catch (err: any) {
       return { success: false, message: err.message, logs: [err.message] };
     }
   },
 
   async configure(env: EnvironmentInfo, apiConfig: ApiConfig): Promise<void> {
-    logger.info('Configure API keys in Roo Code Settings > API Configuration');
+    logger.info('在 Roo Code 设置 > API 配置中配置 API Key。');
   },
 
   async start(env: EnvironmentInfo): Promise<void> {
@@ -149,7 +149,7 @@ const RooCodePlugin: InstallerPlugin = {
   },
 
   async stop(env: EnvironmentInfo): Promise<void> {
-    logger.info('Close Roo Code from the application window.');
+    logger.info('在应用窗口中关闭 Roo Code。');
   },
 
   async status(env: EnvironmentInfo): Promise<PluginStatus> {

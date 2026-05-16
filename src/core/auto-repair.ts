@@ -24,9 +24,9 @@ export class AutoRepair {
     if (this.isNetworkError(error)) {
       actions.push({
         type: 'change-mirror',
-        description: 'Switch to mirror source for faster downloads',
+        description: '切换到镜像源以加速下载',
         execute: async () => {
-          this.logger.info('Switching to mirror source...');
+          this.logger.info('正在切换到镜像源...');
           this.mirrorManager.enableChinaMirror();
           return true;
         },
@@ -34,9 +34,9 @@ export class AutoRepair {
 
       actions.push({
         type: 'retry',
-        description: 'Retry with new mirror source',
+        description: '使用新镜像源重试',
         execute: async () => {
-          this.logger.info('Retrying download...');
+          this.logger.info('正在重试下载...');
           return true;
         },
       });
@@ -46,9 +46,9 @@ export class AutoRepair {
     if (this.isPermissionError(error)) {
       actions.push({
         type: 'fix-permission',
-        description: 'Fix file/directory permissions',
+        description: '修复文件/目录权限',
         execute: async () => {
-          this.logger.info('Fixing permissions...');
+          this.logger.info('正在修复权限...');
           return this.fixPermissions(env);
         },
       });
@@ -58,9 +58,9 @@ export class AutoRepair {
     if (this.isPortConflict(error)) {
       actions.push({
         type: 'kill-process',
-        description: 'Kill conflicting process on port',
+        description: '终止占用端口的冲突进程',
         execute: async () => {
-          this.logger.info('Resolving port conflict...');
+          this.logger.info('正在解决端口冲突...');
           return this.resolvePortConflict(error, env);
         },
       });
@@ -70,9 +70,9 @@ export class AutoRepair {
     if (this.isDependencyError(error)) {
       actions.push({
         type: 'install-dep',
-        description: 'Install missing dependencies',
+        description: '安装缺失的依赖',
         execute: async () => {
-          this.logger.info('Installing missing dependencies...');
+          this.logger.info('正在安装缺失的依赖...');
           return this.installMissingDeps(error, env);
         },
       });
@@ -82,21 +82,21 @@ export class AutoRepair {
     if (this.isVersionError(error)) {
       actions.push({
         type: 'downgrade',
-        description: 'Try a compatible version',
+        description: '尝试使用兼容版本',
         execute: async () => {
-          this.logger.info('Attempting version downgrade...');
+          this.logger.info('正在尝试降级版本...');
           return true;
         },
       });
     }
 
-    // Generic retry
+    // 通用重试
     if (actions.length === 0) {
       actions.push({
         type: 'retry',
-        description: 'Retry the operation',
+        description: '重试操作',
         execute: async () => {
-          this.logger.info('Retrying operation...');
+          this.logger.info('正在重试操作...');
           return true;
         },
       });
@@ -110,24 +110,24 @@ export class AutoRepair {
     env: EnvironmentInfo,
     originalOperation: () => Promise<boolean>
   ): Promise<RepairResult> {
-    this.logger.info('Auto-repair triggered...');
+    this.logger.info('自动修复已触发...');
     const actions = await this.diagnose(error, env);
     const executedActions: RepairAction[] = [];
 
     for (let attempt = 0; attempt < this.maxRetries; attempt++) {
-      this.logger.info(`Repair attempt ${attempt + 1}/${this.maxRetries}`);
+      this.logger.info(`修复尝试 ${attempt + 1}/${this.maxRetries}`);
 
       for (const action of actions) {
-        this.logger.info(`  Trying: ${action.description}`);
+        this.logger.info(`  尝试: ${action.description}`);
         try {
           const fixed = await action.execute();
           executedActions.push(action);
 
           if (fixed) {
-            // Retry original operation
+            // 重试原始操作
             const success = await originalOperation();
             if (success) {
-              this.logger.info('Auto-repair successful!');
+              this.logger.info('自动修复成功！');
               return { fixed: true, actions: executedActions };
             }
           }

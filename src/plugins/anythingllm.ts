@@ -19,7 +19,7 @@ const logger = new Logger('AnythingLLM');
 const AnythingLLMPlugin: InstallerPlugin = {
   id: 'anythingllm',
   name: 'AnythingLLM',
-  description: 'All-in-one AI desktop application with document chat, RAG, and agent capabilities',
+  description: '本地知识库对话工具，导入文档后向 AI 提问（RAG）',
   version: '1.0.0',
   category: 'knowledge-base',
   tags: ['rag', 'documents', 'knowledge-base', 'desktop', 'chat-with-docs'],
@@ -58,14 +58,14 @@ const AnythingLLMPlugin: InstallerPlugin = {
   async preInstall(env: EnvironmentInfo): Promise<PreInstallResult> {
     const warnings = [];
     if (!env.hasNode) {
-      warnings.push('Node.js is required. It will be installed automatically.');
+      warnings.push('需要 Node.js，将自动安装。');
     }
     return {
       canInstall: true,
       missingDependencies: [],
       warnings,
       estimatedSize: '~500 MB',
-      estimatedTime: '3-8 minutes',
+      estimatedTime: '3-8 分钟',
     };
   },
 
@@ -74,7 +74,7 @@ const AnythingLLMPlugin: InstallerPlugin = {
 
     try {
       // Try desktop installer first
-      logs.push('Installing AnythingLLM Desktop...');
+      logs.push('正在安装 AnythingLLM Desktop...');
 
       if (env.platform === 'windows') {
         const url = 'https://s3.us-west-1.amazonaws.com/public.useanything.com/latest/AnythingLLMDesktop.exe';
@@ -88,19 +88,19 @@ const AnythingLLMPlugin: InstallerPlugin = {
         const installDir = config.installDir || getInstallDir('anythingllm');
         ensureDir(installDir);
 
-        logs.push('Cloning repository...');
+        logs.push('正在克隆仓库...');
         run('git clone --depth 1 https://github.com/Mintplex-Labs/anything-llm.git .', { cwd: installDir, timeout: 120000 });
 
-        logs.push('Installing dependencies...');
+        logs.push('正在安装依赖...');
         run('yarn install --production', { cwd: installDir, timeout: 300000 });
 
-        logs.push('Building...');
+        logs.push('正在构建...');
         run('cd server && yarn install --production', { cwd: installDir, timeout: 300000 });
         run('cd frontend && yarn install --production', { cwd: installDir, timeout: 300000 });
       }
 
       if (config.apiConfig) {
-        logs.push('Configuring API...');
+        logs.push('正在配置 API...');
         const envDir = env.platform === 'linux' ? getInstallDir('anythingllm') : env.homeDir;
         const envPath = path.join(envDir, '.env');
         fs.writeFileSync(envPath, `LLM_PROVIDER=${config.apiConfig.provider || 'openai'}\nOPEN_AI_KEY=${config.apiConfig.apiKey || ''}\n`);
@@ -108,7 +108,7 @@ const AnythingLLMPlugin: InstallerPlugin = {
 
       return {
         success: true,
-        message: 'AnythingLLM installed successfully!',
+        message: 'AnythingLLM 安装完成！',
         logs,
         warnings: [],
         errors: [],
@@ -121,11 +121,11 @@ const AnythingLLMPlugin: InstallerPlugin = {
 
   async postInstall(env: EnvironmentInfo, result: InstallResult): Promise<void> {
     if (result.success) {
-      logger.success('AnythingLLM is installed!');
+      logger.success('AnythingLLM 已安装！');
       if (env.platform !== 'linux') {
-        logger.info('Launch AnythingLLM from your applications menu.');
+        logger.info('从应用菜单中启动 AnythingLLM。');
       } else {
-        logger.info(`Start with: cd ${result.installedPath} && yarn start`);
+        logger.info(`启动命令: cd ${result.installedPath} && yarn start`);
       }
     }
   },
@@ -137,7 +137,7 @@ const AnythingLLMPlugin: InstallerPlugin = {
       }
       const installDir = getInstallDir('anythingllm');
       if (fs.existsSync(installDir)) fs.rmSync(installDir, { recursive: true, force: true });
-      return { success: true, message: 'AnythingLLM uninstalled', logs: ['Removed'] };
+      return { success: true, message: 'AnythingLLM 已卸载', logs: ['已移除'] };
     } catch (err: any) {
       return { success: false, message: err.message, logs: [err.message] };
     }
@@ -153,26 +153,26 @@ const AnythingLLMPlugin: InstallerPlugin = {
           run('git pull origin main', { cwd: installDir, timeout: 120000 });
         }
       }
-      return { success: true, message: 'AnythingLLM updated', logs: ['Updated'] };
+      return { success: true, message: 'AnythingLLM 已更新', logs: ['已更新'] };
     } catch (err: any) {
       return { success: false, message: err.message, logs: [err.message] };
     }
   },
 
   async configure(env: EnvironmentInfo, apiConfig: ApiConfig): Promise<void> {
-    logger.info('Configure API keys in AnythingLLM Settings > LLM Preference');
+    logger.info('在 AnythingLLM 设置 > LLM 偏好中配置 API Key。');
   },
 
   async start(env: EnvironmentInfo): Promise<void> {
     if (env.platform === 'macos') {
       execSync('open -a AnythingLLM', { timeout: 10000 });
     } else {
-      logger.info('Start AnythingLLM from your applications menu or run the start script.');
+      logger.info('从应用菜单启动 AnythingLLM，或运行启动脚本。');
     }
   },
 
   async stop(env: EnvironmentInfo): Promise<void> {
-    logger.info('Close AnythingLLM from the application window.');
+    logger.info('在应用窗口中关闭 AnythingLLM。');
   },
 
   async status(env: EnvironmentInfo): Promise<PluginStatus> {

@@ -19,7 +19,7 @@ const logger = new Logger('OpenHands');
 const OpenHandsPlugin: InstallerPlugin = {
   id: 'openhands',
   name: 'OpenHands',
-  description: 'AI software engineering agent that can write, debug, and deploy code autonomously',
+  description: 'AI 自动编程代理，可自主编写、调试和部署代码（需 Docker）',
   version: '1.0.0',
   category: 'automation',
   tags: ['agent', 'autonomous', 'coding', 'devops', 'software-engineering'],
@@ -55,9 +55,9 @@ const OpenHandsPlugin: InstallerPlugin = {
       return {
         canInstall: false,
         missingDependencies: missing,
-        warnings: ['OpenHands requires Docker. On Windows, install Docker Desktop with WSL2 backend first.'],
+        warnings: ['OpenHands 需要 Docker。在 Windows 上请先安装 Docker Desktop（需启用 WSL2）。'],
         estimatedSize: '~5 GB',
-        estimatedTime: '5-15 minutes',
+        estimatedTime: '5-15 分钟',
       };
     }
     return {
@@ -65,7 +65,7 @@ const OpenHandsPlugin: InstallerPlugin = {
       missingDependencies: missing,
       warnings: [],
       estimatedSize: '~5 GB',
-      estimatedTime: '5-15 minutes',
+      estimatedTime: '5-15 分钟',
     };
   },
 
@@ -73,14 +73,14 @@ const OpenHandsPlugin: InstallerPlugin = {
     const logs: string[] = [];
 
     try {
-      logs.push('Pulling OpenHands Docker image...');
+      logs.push('正在拉取 OpenHands Docker 镜像...');
       run('docker pull docker.all-hands.dev/all-hands-ai/runtime:latest', { timeout: 600000 });
 
       const apiKey = config.apiConfig?.apiKey || '';
       const model = config.apiConfig?.model || 'claude-sonnet-4-6';
       const provider = config.apiConfig?.provider || 'anthropic';
 
-      logs.push('Starting OpenHands container...');
+      logs.push('正在启动 OpenHands 容器...');
       const dockerCmd = [
         'docker run -d --pull=always',
         '--name openhands',
@@ -98,7 +98,7 @@ const OpenHandsPlugin: InstallerPlugin = {
 
       return {
         success: true,
-        message: 'OpenHands installed and running! Access at http://localhost:3000',
+        message: 'OpenHands 安装完成！访问 http://localhost:3000',
         installedPath: '~/.openhands',
         logs,
         warnings: [],
@@ -112,8 +112,8 @@ const OpenHandsPlugin: InstallerPlugin = {
 
   async postInstall(env: EnvironmentInfo, result: InstallResult): Promise<void> {
     if (result.success) {
-      logger.success('OpenHands is running at http://localhost:3000');
-      logger.info('Data is stored in ~/.openhands');
+      logger.success('OpenHands 已启动！访问 http://localhost:3000');
+      logger.info('数据存储在 ~/.openhands');
     }
   },
 
@@ -122,7 +122,7 @@ const OpenHandsPlugin: InstallerPlugin = {
       execSync('docker stop openhands 2>/dev/null; docker rm openhands 2>/dev/null', { timeout: 30000 });
       const dataDir = path.join(env.homeDir, '.openhands');
       if (fs.existsSync(dataDir)) fs.rmSync(dataDir, { recursive: true, force: true });
-      return { success: true, message: 'OpenHands uninstalled', logs: ['Stopped and removed container'] };
+      return { success: true, message: 'OpenHands 已卸载', logs: ['已停止并移除容器'] };
     } catch (err: any) {
       return { success: false, message: err.message, logs: [err.message] };
     }
@@ -132,14 +132,14 @@ const OpenHandsPlugin: InstallerPlugin = {
     try {
       execSync('docker stop openhands 2>/dev/null; docker rm openhands 2>/dev/null', { timeout: 30000 });
       run('docker pull docker.all-hands.dev/all-hands-ai/openhands:latest', { timeout: 600000 });
-      return { success: true, message: 'OpenHands updated. Re-run install to start with new version.', logs: ['Pulled latest image'] };
+      return { success: true, message: 'OpenHands 已更新。请重新安装以使用新版本。', logs: ['已拉取最新镜像'] };
     } catch (err: any) {
       return { success: false, message: err.message, logs: [err.message] };
     }
   },
 
   async configure(env: EnvironmentInfo, apiConfig: ApiConfig): Promise<void> {
-    logger.info('Restart OpenHands container with new API key to apply changes.');
+    logger.info('请重启 OpenHands 容器以使新的 API Key 生效。');
     try {
       execSync('docker stop openhands 2>/dev/null; docker rm openhands 2>/dev/null', { timeout: 30000 });
     } catch { /* ignore */ }

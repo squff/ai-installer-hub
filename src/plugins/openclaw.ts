@@ -19,7 +19,7 @@ const logger = new Logger('OpenClaw');
 const OpenClawPlugin: InstallerPlugin = {
   id: 'openclaw',
   name: 'OpenClaw',
-  description: 'Open-source AI assistant with multi-model support and tool integration',
+  description: '开源 AI 助手，支持多模型和工具集成',
   version: '1.0.0',
   category: 'chat-agent',
   tags: ['chat', 'multi-model', 'tools', 'open-source'],
@@ -59,9 +59,9 @@ const OpenClawPlugin: InstallerPlugin = {
     return {
       canInstall: missing.length === 0 || !missing.some((d) => d.required),
       missingDependencies: missing,
-      warnings: missing.length > 0 ? [`Missing: ${missing.map((d) => d.name).join(', ')}`] : [],
+      warnings: missing.length > 0 ? [`缺少依赖: ${missing.map((d) => d.name).join(', ')}`] : [],
       estimatedSize: '~200 MB',
-      estimatedTime: '2-5 minutes',
+      estimatedTime: '2-5 分钟',
     };
   },
 
@@ -70,26 +70,26 @@ const OpenClawPlugin: InstallerPlugin = {
     const installDir = config.installDir || getInstallDir('openclaw');
 
     try {
-      logs.push('Creating install directory...');
+      logs.push('正在创建安装目录...');
       ensureDir(installDir);
 
-      logs.push('Cloning OpenClaw repository...');
+      logs.push('正在克隆 OpenClaw 仓库...');
       const repoUrl = 'https://github.com/openclaw/openclaw.git';
       run(`git clone --depth 1 ${repoUrl} "${installDir}"`, { timeout: 120000 });
 
-      logs.push('Installing dependencies...');
+      logs.push('正在安装依赖...');
       run('npm install --production', { cwd: installDir, timeout: 300000 });
 
       if (config.apiConfig) {
-        logs.push('Configuring API...');
+        logs.push('正在配置 API...');
         const envContent = `OPENAI_API_KEY=${config.apiConfig.apiKey || ''}\nOPENAI_BASE_URL=${config.apiConfig.baseUrl || ''}\n`;
         fs.writeFileSync(path.join(installDir, '.env'), envContent);
       }
 
-      logs.push('Build complete!');
+      logs.push('构建完成！');
       return {
         success: true,
-        message: 'OpenClaw installed successfully',
+        message: 'OpenClaw 安装完成',
         installedPath: installDir,
         logs,
         warnings: [],
@@ -99,7 +99,7 @@ const OpenClawPlugin: InstallerPlugin = {
     } catch (err: any) {
       return {
         success: false,
-        message: `Installation failed: ${err.message}`,
+        message: `安装失败: ${err.message}`,
         logs,
         warnings: [],
         errors: [err.message],
@@ -110,7 +110,7 @@ const OpenClawPlugin: InstallerPlugin = {
 
   async postInstall(env: EnvironmentInfo, result: InstallResult): Promise<void> {
     if (!result.success || !result.installedPath) return;
-    logger.info('Post-install: creating startup scripts...');
+    logger.info('安装后处理：正在创建启动脚本...');
 
     const startScript = env.platform === 'windows'
       ? `@echo off\ncd /d "${result.installedPath}"\nnpm start\n`
@@ -131,7 +131,7 @@ const OpenClawPlugin: InstallerPlugin = {
       if (fs.existsSync(installDir)) {
         fs.rmSync(installDir, { recursive: true, force: true });
       }
-      return { success: true, message: 'OpenClaw uninstalled successfully', logs: ['Removed ' + installDir] };
+      return { success: true, message: 'OpenClaw 已卸载', logs: ['已移除 ' + installDir] };
     } catch (err: any) {
       return { success: false, message: err.message, logs: [err.message] };
     }
@@ -142,16 +142,21 @@ const OpenClawPlugin: InstallerPlugin = {
     try {
       run('git pull origin main', { cwd: installDir, timeout: 120000 });
       run('npm install --production', { cwd: installDir, timeout: 300000 });
-      return { success: true, message: 'OpenClaw updated successfully', logs: ['Pulled latest changes'] };
+      return { success: true, message: 'OpenClaw 已更新', logs: ['已拉取最新代码'] };
     } catch (err: any) {
       return { success: false, message: err.message, logs: [err.message] };
     }
   },
 
   async configure(env: EnvironmentInfo, apiConfig: ApiConfig): Promise<void> {
+    const { ApiConfigManager } = require('../core/api-config');
+    const manager = new ApiConfigManager();
+    const provider = apiConfig.provider ? manager.getProvider(apiConfig.provider) : null;
+    const envKey = provider?.envKey || 'OPENAI_API_KEY';
+
     const installDir = getInstallDir('openclaw');
     const envPath = path.join(installDir, '.env');
-    const content = `${apiConfig.envKey || 'OPENAI_API_KEY'}=${apiConfig.apiKey || ''}\n`;
+    const content = `${envKey}=${apiConfig.apiKey || ''}\n`;
     fs.writeFileSync(envPath, content);
   },
 

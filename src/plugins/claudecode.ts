@@ -19,7 +19,7 @@ const logger = new Logger('ClaudeCode');
 const ClaudeCodePlugin: InstallerPlugin = {
   id: 'claudecode',
   name: 'Claude Code',
-  description: 'Anthropic\'s official CLI coding assistant powered by Claude',
+  description: 'Anthropic 官方编程助手，代码能力极强（需科学上网）',
   version: '1.0.0',
   category: 'coding-assistant',
   tags: ['coding', 'cli', 'anthropic', 'claude', 'ai-pair-programming'],
@@ -57,9 +57,9 @@ const ClaudeCodePlugin: InstallerPlugin = {
     return {
       canInstall: true,
       missingDependencies: missing,
-      warnings: missing.length > 0 ? [`Missing: ${missing.map((d) => d.name).join(', ')}`] : [],
+      warnings: missing.length > 0 ? [`缺少依赖: ${missing.map((d) => d.name).join(', ')}`] : [],
       estimatedSize: '~50 MB',
-      estimatedTime: '1-2 minutes',
+      estimatedTime: '1-2 分钟',
     };
   },
 
@@ -67,11 +67,11 @@ const ClaudeCodePlugin: InstallerPlugin = {
     const logs: string[] = [];
 
     try {
-      logs.push('Installing Claude Code via npm...');
+      logs.push('正在通过 npm 安装 Claude Code...');
       run('npm install -g @anthropic-ai/claude-code', { timeout: 120000 });
 
       if (config.apiConfig?.apiKey) {
-        logs.push('Configuring API key...');
+        logs.push('正在配置 API Key...');
         const envVarName = 'ANTHROPIC_API_KEY';
         if (env.platform === 'windows') {
           execSync(`setx ${envVarName} "${config.apiConfig.apiKey}"`, { timeout: 10000 });
@@ -87,7 +87,7 @@ const ClaudeCodePlugin: InstallerPlugin = {
 
       return {
         success: true,
-        message: 'Claude Code installed successfully! Run "claude" to start.',
+        message: 'Claude Code 安装完成！输入 "claude" 即可启动。',
         logs,
         warnings: [],
         errors: [],
@@ -100,13 +100,13 @@ const ClaudeCodePlugin: InstallerPlugin = {
 
   async postInstall(env: EnvironmentInfo, result: InstallResult): Promise<void> {
     if (!result.success) return;
-    logger.success('Claude Code is ready! Run "claude" in your terminal to start.');
+    logger.success('Claude Code 已就绪！在终端输入 "claude" 启动。');
   },
 
   async uninstall(env: EnvironmentInfo): Promise<UninstallResult> {
     try {
       run('npm uninstall -g @anthropic-ai/claude-code', { timeout: 60000 });
-      return { success: true, message: 'Claude Code uninstalled', logs: ['Removed globally'] };
+      return { success: true, message: 'Claude Code 已卸载', logs: ['已全局移除'] };
     } catch (err: any) {
       return { success: false, message: err.message, logs: [err.message] };
     }
@@ -115,7 +115,7 @@ const ClaudeCodePlugin: InstallerPlugin = {
   async update(env: EnvironmentInfo): Promise<UpdateResult> {
     try {
       run('npm update -g @anthropic-ai/claude-code', { timeout: 120000 });
-      return { success: true, message: 'Claude Code updated', logs: ['Updated globally'] };
+      return { success: true, message: 'Claude Code 已更新', logs: ['已全局更新'] };
     } catch (err: any) {
       return { success: false, message: err.message, logs: [err.message] };
     }
@@ -132,11 +132,11 @@ const ClaudeCodePlugin: InstallerPlugin = {
   },
 
   async start(env: EnvironmentInfo): Promise<void> {
-    logger.info('Run "claude" in your terminal to start Claude Code.');
+    logger.info('在终端输入 "claude" 启动 Claude Code。');
   },
 
   async stop(env: EnvironmentInfo): Promise<void> {
-    logger.info('Claude Code runs in your terminal. Close the terminal to stop.');
+    logger.info('Claude Code 在终端中运行，关闭终端即可停止。');
   },
 
   async status(env: EnvironmentInfo): Promise<PluginStatus> {
