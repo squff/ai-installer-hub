@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Installer Hub - One-Click AI Assistant Installation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 24px;
+        }
+        h1 {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #00d4ff, #7c3aed, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 1.25rem;
+            color: #888;
+            margin-bottom: 48px;
+        }
+        .install-section {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+        .install-section h2 {
+            font-size: 1.1rem;
+            color: #888;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+        .code-block {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 16px 20px;
+            font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+            font-size: 0.95rem;
+            position: relative;
+            overflow-x: auto;
+        }
+        .code-block code {
+            color: #00ff88;
+        }
+        .copy-btn {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            background: #333;
+            border: none;
+            color: #888;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .copy-btn:hover { background: #444; color: #fff; }
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 48px;
+        }
+        .tool-card {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 20px;
+            transition: border-color 0.2s;
+        }
+        .tool-card:hover { border-color: #444; }
+        .tool-card h3 { font-size: 1.1rem; margin-bottom: 8px; color: #fff; }
+        .tool-card p { font-size: 0.9rem; color: #888; line-height: 1.5; }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-right: 4px;
+            margin-top: 8px;
+        }
+        .badge-cloud { background: #1a3a2a; color: #4ade80; }
+        .badge-local { background: #2a1a3a; color: #c084fc; }
+        .badge-win { background: #1a2a3a; color: #60a5fa; }
+        footer {
+            text-align: center;
+            margin-top: 64px;
+            color: #555;
+            font-size: 0.85rem;
+        }
+        footer a { color: #7c3aed; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI Installer Hub</h1>
+        <p class="subtitle">One-click installation for AI assistants.<br>No technical knowledge required.</p>
+
+        <div class="install-section">
+            <h2>Windows</h2>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <code>irm https://ai-installer-hub.github.io/install.ps1 | iex</code>
+            </div>
+        </div>
+
+        <div class="install-section">
+            <h2>Linux / macOS</h2>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <code>curl -fsSL https://ai-installer-hub.github.io/install.sh | bash</code>
+            </div>
+        </div>
+
+        <h2 style="margin-bottom: 24px;">Available AI Assistants</h2>
+        <div class="tools-grid">
+            <div class="tool-card">
+                <h3>Claude Code</h3>
+                <p>Anthropic's official CLI coding assistant</p>
+                <span class="badge badge-cloud">Cloud</span>
+            </div>
+            <div class="tool-card">
+                <h3>Ollama</h3>
+                <p>Run LLMs locally on your machine</p>
+                <span class="badge badge-local">Local</span>
+            </div>
+            <div class="tool-card">
+                <h3>Continue</h3>
+                <p>Open-source AI code assistant for VS Code</p>
+                <span class="badge badge-cloud">Cloud</span>
+                <span class="badge badge-local">Local</span>
+            </div>
+            <div class="tool-card">
+                <h3>OpenClaw</h3>
+                <p>Open-source AI assistant with multi-model support</p>
+                <span class="badge badge-cloud">Cloud</span>
+                <span class="badge badge-local">Local</span>
+            </div>
+            <div class="tool-card">
+                <h3>Hermes</h3>
+                <p>Lightweight AI with conversation memory</p>
+                <span class="badge badge-cloud">Cloud</span>
+                <span class="badge badge-local">Local</span>
+            </div>
+            <div class="tool-card">
+                <h3>Roo Code</h3>
+                <p>AI-powered VS Code fork with built-in assistant</p>
+                <span class="badge badge-cloud">Cloud</span>
+                <span class="badge badge-local">Local</span>
+            </div>
+            <div class="tool-card">
+                <h3>OpenHands</h3>
+                <p>Autonomous AI software engineering agent</p>
+                <span class="badge badge-cloud">Cloud</span>
+            </div>
+            <div class="tool-card">
+                <h3>AnythingLLM</h3>
+                <p>Chat with your documents (RAG)</p>
+                <span class="badge badge-cloud">Cloud</span>
+                <span class="badge badge-local">Local</span>
+            </div>
+        </div>
+
+        <footer>
+            <p>
+                <a href="https://github.com/ai-installer-hub/ai-installer-hub">GitHub</a>
+                &nbsp;&middot;&nbsp; MIT License
+                &nbsp;&middot;&nbsp; AI Agent Era's Unified Installation Platform
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        function copyCode(btn) {
+            const code = btn.parentElement.querySelector('code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = 'Copy', 2000);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -n "$PREV_TAG" ]; then
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" "$PREV_TAG"..HEAD)
+          else
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" HEAD)
+          fi
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          body: |
+            ## Changes
+
+            ${{ steps.changelog.outputs.changelog }}
+
+            ## Quick Install
+
+            **Windows:**
+            ```powershell
+            irm https://ai-installer-hub.github.io/install.ps1 | iex
+            ```
+
+            **Linux/macOS:**
+            ```bash
+            curl -fsSL https://ai-installer-hub.github.io/install.sh | bash
+            ```
+
+            ## Supported AI Assistants
+
+            | Tool | Category | Platform |
+            |------|----------|----------|
+            | Claude Code | Coding Assistant | Win/Mac/Linux |
+            | Ollama | Local LLM | Win/Mac/Linux |
+            | Continue | IDE Extension | Win/Mac/Linux |
+            | OpenClaw | Chat Agent | Win/Mac/Linux |
+            | Hermes | Chat Agent | Win/Mac/Linux |
+            | Roo Code | AI Editor | Win/Mac/Linux |
+            | OpenHands | Automation | Mac/Linux |
+            | AnythingLLM | Knowledge Base | Win/Mac/Linux |
+          files: |
+            scripts/install.ps1
+            scripts/install.sh
